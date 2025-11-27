@@ -1,0 +1,12 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. SAMPLE.
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       77  NUM1 PIC 9(9) VALUE 10.
+       77  NUM2 PIC 9(9) VALUE 20.
+       PROCEDURE DIVISION.
+       MAIN-PROCEDURE.
+           DISPLAY "Hello from COBOL".
+           COMPUTE NUM1 = NUM1 + NUM2.
+           DISPLAY NUM1.
+           STOP RUN.

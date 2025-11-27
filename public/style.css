@@ -57,12 +57,31 @@ header {
     margin-top: 0.5rem;
 }
 
+.swap-button {
+    margin-top: 1rem;
+    padding: 0.5rem 1.5rem;
+    background-color: var(--accent-color);
+    color: var(--bg-color);
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.swap-button:hover {
+    background-color: #7dd3fc;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
+}
+
 .container {
     display: flex;
     flex: 1;
     padding: 2rem;
     gap: 2rem;
-    height: calc(100vh - 100px);
+    height: calc(100vh - 180px);
 }
 
 .editor-pane {
@@ -116,7 +135,6 @@ pre {
     white-space: pre-wrap;
 }
 
-/* Scrollbar styling */
 ::-webkit-scrollbar {
     width: 10px;
     height: 10px;

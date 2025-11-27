@@ -15,17 +15,25 @@ class Transpiler {
 
     transpile(code, filename = 'input.js') {
         // Pre-process Vue files
-        if (code.trim().startsWith('<template') || code.includes('<script')) {
+        if (code.trim().startsWith('<template') || code.trim().startsWith('<script') || code.includes('</script>')) {
             const scriptMatch = code.match(/<script[^>]*>([\s\S]*?)<\/script>/);
             if (scriptMatch) {
                 code = scriptMatch[1];
+            } else if (code.trim().startsWith('<template')) {
+                // Vue file without script or failed to match
+                // Try to parse as is, but if it fails, it's likely because we couldn't extract script
             }
         }
 
-        const ast = parser.parse(code, {
-            sourceType: 'module',
-            plugins: ['typescript', 'jsx', 'classProperties', 'decorators-legacy']
-        });
+        let ast;
+        try {
+            ast = parser.parse(code, {
+                sourceType: 'module',
+                plugins: ['typescript', 'jsx', 'classProperties', 'decorators-legacy']
+            });
+        } catch (err) {
+            throw new Error(`Syntax Error: ${err.message}. Ensure you are using valid JavaScript, TypeScript, React, or Vue syntax.`);
+        }
 
         // Header
         this.workingStorage.push('       IDENTIFICATION DIVISION.');

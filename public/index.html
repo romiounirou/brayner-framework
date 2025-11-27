@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Brayner Framework - JS to COBOL</title>
+    <title>Brayner Framework - Bidirectional Transpiler</title>
     <link rel="stylesheet" href="style.css">
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Fira+Code:wght@400;500&display=swap"
@@ -14,7 +14,6 @@
 <body>
     <header>
         <div class="logo-container">
-            <!-- Pliers Icon -->
             <svg class="logo-icon" width="40" height="40" viewBox="0 0 24 24" fill="none"
                 xmlns="http://www.w3.org/2000/svg">
                 <path
@@ -26,7 +25,8 @@
             </svg>
             <h1 class="logo-text">Brayner <span class="highlight">Framework</span></h1>
         </div>
-        <p class="subtitle">JavaScript to COBOL Transpiler</p>
+        <p class="subtitle">Bidirectional Transpiler: <span id="mode-display">JavaScript → COBOL</span></p>
+        <button id="swap-btn" class="swap-button">⇄ Swap Direction</button>
     </header>
 
     <main class="container">
