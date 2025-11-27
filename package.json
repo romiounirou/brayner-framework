@@ -1,0 +1,22 @@
+{
+  "name": "brayner-framework",
+  "version": "1.0.0",
+  "description": "JavaScript to COBOL transpiler and executor",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "cobol",
+    "javascript",
+    "transpiler"
+  ],
+  "author": "Antigravity",
+  "license": "ISC",
+  "dependencies": {
+    "acorn": "^8.11.3",
+    "body-parser": "^2.2.1",
+    "express": "^5.1.0"
+  }
+}

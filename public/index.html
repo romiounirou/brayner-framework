@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brayner Framework - JS to COBOL</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+            <!-- Placeholder for logo if image generation fails -->
+            <h1 class="logo-text">Brayner <span class="highlight">Framework</span></h1>
+        </div>
+        <p class="subtitle">JavaScript to COBOL Transpiler</p>
+    </header>
+
+    <main class="container">
+        <div class="editor-pane">
+            <div class="pane-header">
+                <span class="lang-label">JavaScript</span>
+                <span class="status" id="js-status">Input</span>
+            </div>
+            <textarea id="js-input" placeholder="// Write your JavaScript here...
+var msg = 'Hello World';
+console.log(msg);" spellcheck="false"></textarea>
+        </div>
+
+        <div class="editor-pane">
+            <div class="pane-header">
+                <span class="lang-label">COBOL</span>
+                <span class="status" id="cobol-status">Real-time Preview</span>
+            </div>
+            <pre id="cobol-output"><code class="language-cobol">       IDENTIFICATION DIVISION.
+       PROGRAM-ID. BRAYNER-APP.
+       ...</code></pre>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
