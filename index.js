@@ -24,17 +24,17 @@ const inputCode = fs.readFileSync(inputFile, 'utf-8');
 try {
     if (isReverse) {
         // COBOL -> JS
-        console.log('[Brayner] Reverse Transpiling', inputFile, '(COBOL -> JS)');
+        console.log('[Alicate de Roseta] Reverse Transpiling', inputFile, '(COBOL -> JS)');
 
         const reverseTranspiler = new ReverseTranspiler();
         const jsCode = reverseTranspiler.transpile(inputCode);
 
         const outputFile = inputFile.replace(/\.(cbl|cobol|cob)$/i, '.js');
         fs.writeFileSync(outputFile, jsCode);
-        console.log('[Brayner] Generated JavaScript file:', outputFile);
+        console.log('[Alicate de Roseta] Generated JavaScript file:', outputFile);
     } else {
         // JS -> COBOL
-        console.log('[Brayner] Transpiling', inputFile);
+        console.log('[Alicate de Roseta] Transpiling', inputFile);
 
         const transpiler = new Transpiler();
         const cobolCode = transpiler.transpile(inputCode, inputFile);
@@ -43,5 +43,5 @@ try {
         executor.execute(cobolCode, 'output.cbl');
     }
 } catch (err) {
-    console.error('[Brayner] Error:', err);
+    console.error('[Alicate de Roseta] Error:', err);
 }

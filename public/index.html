@@ -30,6 +30,7 @@
         <button id="swap-btn" class="swap-button">⇄ Swap Direction</button>
     </header>
 
+    <!-- Creator Popup -->
     <div id="creator-popup" class="popup-overlay">
         <div class="popup-content">
             <img src="creator.png" alt="Creator" class="creator-photo">
@@ -43,108 +44,89 @@
         <div class="editor-pane">
             <div class="pane-header">
                 <span class="lang-label">JavaScript</span>
-                <button id="copy-input-btn" class="copy-button" title="Copy JavaScript code">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                    Copy
-                </button>
-            </div>
-            <textarea id="js-input" placeholder="// Write your JavaScript here...
+                <span class="status" id="js-status">Input</span>
+                <!DOCTYPE html>
+                <html lang="en">
+
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Brayner Framework - Bidirectional Transpiler</title>
+                    <link rel="stylesheet" href="style.css">
+                    <link
+                        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Fira+Code:wght@400;500&display=swap"
+                        rel="stylesheet">
+                </head>
+
+                <body>
+                    <header>
+                        <div class="logo-container" id="logo-container">
+                            <svg class="logo-icon" width="40" height="40" viewBox="0 0 24 24" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M14.5 9.5L19 5M5 19L9.5 14.5M5 19L3 21M5 19L2 16M19 5L21 3M19 5L22 8M9.5 14.5C10.5 13.5 10.5 12 9.5 11C8.5 10 7 10 6 11L3 14L10 21L13 18C14 17 14 15.5 13 14.5C12 13.5 10.5 13.5 9.5 14.5Z"
+                                    stroke="#38bdf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                <path
+                                    d="M14.5 9.5C13.5 10.5 12 10.5 11 9.5C10 8.5 10 7 11 6L14 3L21 10L18 13C17 14 15.5 14 14.5 13C13.5 12 13.5 10.5 14.5 9.5Z"
+                                    stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                            <h1 class="logo-text">Brayner <span class="highlight">Framework</span></h1>
+                        </div>
+                        <p class="subtitle">Quer solidez? vem de alicate</p>
+                        <p class="mode-info">Bidirectional Transpiler: <span id="mode-display">JavaScript → COBOL</span>
+                        </p>
+                        <button id="swap-btn" class="swap-button">⇄ Swap Direction</button>
+                    </header>
+
+                    <!-- Creator Popup -->
+                    <div id="creator-popup" class="popup-overlay">
+                        <div class="popup-content">
+                            <img src="creator.png" alt="Creator" class="creator-photo">
+                            <h2>Criador</h2>
+                            <p><strong>Renan Brayner</strong></p>
+                            <p>Desenvolvedor do Brayner Framework</p>
+                        </div>
+                    </div>
+
+                    <main class="container">
+                        <div class="editor-pane">
+                            <div class="pane-header">
+                                <span class="lang-label">JavaScript</span>
+                                <span class="status" id="js-status">Input</span>
+                            </div>
+                            <textarea id="js-input" placeholder="// Write your JavaScript here...
 var msg = 'Hello World';
 console.log(msg);" spellcheck="false"></textarea>
-        </div>
-
-        <div class="editor-pane">
-            <div class="pane-header">
-                <span class="lang-label">COBOL</span>
-                <button id="copy-output-btn" class="copy-button" title="Copy COBOL code">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                    Copy
-                </button>
-            </div>
-            <!DOCTYPE html>
-            <html lang="en">
-
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Brayner Framework - Bidirectional Transpiler</title>
-                <link rel="stylesheet" href="style.css">
-                <link
-                    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Fira+Code:wght@400;500&display=swap"
-                    rel="stylesheet">
-            </head>
-
-            <body>
-                <header>
-                    <div class="logo-container" id="logo-container">
-                        <svg class="logo-icon" width="40" height="40" viewBox="0 0 24 24" fill="none"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <path
-                                d="M14.5 9.5L19 5M5 19L9.5 14.5M5 19L3 21M5 19L2 16M19 5L21 3M19 5L22 8M9.5 14.5C10.5 13.5 10.5 12 9.5 11C8.5 10 7 10 6 11L3 14L10 21L13 18C14 17 14 15.5 13 14.5C12 13.5 10.5 13.5 9.5 14.5Z"
-                                stroke="#38bdf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                            <path
-                                d="M14.5 9.5C13.5 10.5 12 10.5 11 9.5C10 8.5 10 7 11 6L14 3L21 10L18 13C17 14 15.5 14 14.5 13C13.5 12 13.5 10.5 14.5 9.5Z"
-                                stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                        </svg>
-                        <h1 class="logo-text">Brayner <span class="highlight">Framework</span></h1>
-                    </div>
-                    <p class="subtitle">Quer solidez? vem de alicate</p>
-                    <p class="mode-info">Bidirectional Transpiler: <span id="mode-display">JavaScript → COBOL</span></p>
-                    <button id="swap-btn" class="swap-button">⇄ Swap Direction</button>
-                </header>
-
-                <div id="creator-popup" class="popup-overlay">
-                    <div class="popup-content">
-                        <img src="creator.png" alt="Creator" class="creator-photo">
-                        <h2>Criador</h2>
-                        <p><strong>Renan Brayner</strong></p>
-                        <p>Desenvolvedor do Brayner Framework</p>
-                    </div>
-                </div>
-
-                <main class="container">
-                    <div class="editor-pane">
-                        <div class="pane-header">
-                            <span class="lang-label">JavaScript</span>
-                            <button id="copy-input-btn" class="copy-button" title="Copy JavaScript code">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="2">
-                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                                </svg>
-                                Copy
-                            </button>
                         </div>
-                        <textarea id="js-input" placeholder="// Write your JavaScript here...
-var msg = 'Hello World';
-console.log(msg);" spellcheck="false"></textarea>
-                    </div>
 
-                    <div class="editor-pane">
-                        <div class="pane-header">
-                            <span class="lang-label">COBOL</span>
-                            <button id="copy-output-btn" class="copy-button" title="Copy COBOL code">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="2">
-                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                                </svg>
-                                Copy
-                            </button>
-                        </div>
-                        <pre id="cobol-output"><code class="language-cobol">       IDENTIFICATION DIVISION.
+                        <div class="editor-pane">
+                            <div class="pane-header">
+                                <span class="lang-label">COBOL</span>
+                                <div class="header-controls">
+                                    <button id="copy-btn" class="icon-btn" title="Copy Code">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path
+                                                d="M8 4V16C8 17.1046 8.89543 18 10 18H18C19.1046 18 20 17.1046 20 16V7.24264C20 6.7122 19.7893 6.20357 19.4142 5.82843L16.1716 2.58579C15.7964 2.21071 15.2878 2 14.7574 2H10C8.89543 2 8 2.89543 8 4Z"
+                                                stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                                stroke-linejoin="round" />
+                                            <path
+                                                d="M16 18V20C16 21.1046 15.1046 22 14 22H6C4.89543 22 4 21.1046 4 20V8C4 6.89543 4.89543 6 6 6H8"
+                                                stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                                stroke-linejoin="round" />
+                                        </svg>
+                                        Copy
+                                    </button>
+                                    <span class="status" id="cobol-status">Real-time Preview</span>
+                                </div>
+                            </div>
+                            <pre id="cobol-output"><code class="language-cobol">       IDENTIFICATION DIVISION.
        PROGRAM-ID. BRAYNER-APP.
        ...</code></pre>
-                    </div>
-                </main>
+                        </div>
+                    </main>
 
-                <script src="script.js?v=2"></script>
-            </body>
+                    <script src="script.js"></script>
+                </body>
 
-            </html>
+                </html>

@@ -89,38 +89,12 @@ header {
     box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
 }
 
-.copy-button {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    padding: 0.4rem 0.8rem;
-    background-color: transparent;
-    color: var(--accent-color);
-    border: 1px solid var(--accent-color);
-    border-radius: 6px;
-    font-size: 0.85rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.copy-button:hover {
-    background-color: var(--accent-color);
-    color: var(--bg-color);
-}
-
-.copy-button.copied {
-    background-color: #10b981;
-    border-color: #10b981;
-    color: white;
-}
-
 .container {
     display: flex;
     flex: 1;
     padding: 2rem;
     gap: 2rem;
-    height: calc(100vh - 220px);
+    height: calc(100vh - 200px);
 }
 
 .editor-pane {
@@ -128,25 +102,11 @@ header {
     background-color: var(--pane-bg);
     border-radius: 12px;
     border: 1px solid var(--border-color);
-    display: flex;
-    flex-direction: column;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    overflow: hidden;
 }
 
-.pane-header {
-    padding: 0.75rem 1rem;
-    background-color: rgba(0, 0, 0, 0.2);
-    border-bottom: 1px solid var(--border-color);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.lang-label {
-    font-weight: 600;
-    font-size: 0.9rem;
-    color: var(--accent-color);
+.status {
+    font-size: 0.8rem;
+    color: var(--secondary-accent);
 }
 
 textarea,
@@ -187,6 +147,7 @@ pre {
     background: var(--secondary-accent);
 }
 
+/* Popup Styles */
 .popup-overlay {
     display: none;
     position: fixed;

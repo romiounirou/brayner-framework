@@ -264,6 +264,21 @@ class Transpiler {
             path.skip();
         }
 
+        // Update Expression (i++, i--)
+        if (t.isUpdateExpression(node)) {
+            if (t.isIdentifier(node.argument)) {
+                const varName = this.variables.get(node.argument.name)?.name;
+                if (varName) {
+                    if (node.operator === '++') {
+                        this.addCode(`ADD 1 TO ${varName}.`);
+                    } else if (node.operator === '--') {
+                        this.addCode(`SUBTRACT 1 FROM ${varName}.`);
+                    }
+                }
+            }
+            path.skip();
+        }
+
         if (t.isIfStatement(node)) {
             const condition = this.resolveCondition(node.test);
             this.addCode(`IF ${condition}`);
@@ -281,6 +296,44 @@ class Transpiler {
             this.addCode(`PERFORM UNTIL NOT (${whileCond})`);
             path.get('body').traverse({ enter: (p) => this.visit(p) });
             this.addCode('END-PERFORM.');
+            path.skip();
+        }
+
+        // For Loop
+        if (t.isForStatement(node)) {
+            // Extract init, test, update
+            // Example: for (let i = 0; i < 10; i++)
+
+            // 1. Init
+            if (node.init && t.isVariableDeclaration(node.init)) {
+                const decl = node.init.declarations[0];
+                if (t.isIdentifier(decl.id) && t.isNumericLiteral(decl.init)) {
+                    const varName = decl.id.name;
+                    const initVal = decl.init.value;
+                    const cobolVar = this.addVariable(varName, '9(9)');
+
+                    // 2. Test (Assuming binary expression like i < 10)
+                    let limit = 0;
+                    let condition = '';
+                    if (t.isBinaryExpression(node.test)) {
+                        // We need to construct the UNTIL condition. 
+                        // COBOL PERFORM VARYING ... UNTIL condition
+                        // If loop is i < 10, COBOL UNTIL is i >= 10 (or NOT i < 10)
+                        condition = `NOT (${this.resolveCondition(node.test)})`;
+                    }
+
+                    // 3. Update (Assuming i++)
+                    let step = 1;
+                    if (t.isUpdateExpression(node.update)) {
+                        if (node.update.operator === '++') step = 1;
+                        if (node.update.operator === '--') step = -1; // COBOL VARYING ... BY -1
+                    }
+
+                    this.addCode(`PERFORM VARYING ${cobolVar} FROM ${initVal} BY ${step} UNTIL ${condition}`);
+                    path.get('body').traverse({ enter: (p) => this.visit(p) });
+                    this.addCode('END-PERFORM.');
+                }
+            }
             path.skip();
         }
     }
@@ -302,6 +355,10 @@ class Transpiler {
         else if (node.operator === '-') op = '-';
         else if (node.operator === '*') op = '*';
         else if (node.operator === '/') op = '/';
+        else if (node.operator === '%') {
+            this.addCode(`COMPUTE ${targetVar} = FUNCTION MOD(${left}, ${right}).`);
+            return;
+        }
 
         if (op) {
             this.addCode(`COMPUTE ${targetVar} = ${left} ${op} ${right}.`);
@@ -334,7 +391,23 @@ class Transpiler {
             let op = node.operator;
             if (op === '===') op = '=';
             if (op === '!==') op = 'NOT =';
+            if (op === '<') op = '<';
+            if (op === '>') op = '>';
+            if (op === '<=') op = '<=';
+            if (op === '>=') op = '>=';
             return `${left} ${op} ${right}`;
+        }
+        if (t.isLogicalExpression(node)) {
+            const left = this.resolveCondition(node.left);
+            const right = this.resolveCondition(node.right);
+            let op = '';
+            if (node.operator === '&&') op = 'AND';
+            if (node.operator === '||') op = 'OR';
+            return `(${left}) ${op} (${right})`;
+        }
+        if (t.isUnaryExpression(node) && node.operator === '!') {
+            const arg = this.resolveCondition(node.argument);
+            return `NOT (${arg})`;
         }
         return '1 = 1';
     }
