@@ -119,7 +119,7 @@ class Transpiler {
 
         if (t.isVariableDeclaration(node)) {
             node.declarations.forEach(decl => {
-                if (!t.isIdentifier(decl.id)) return; // Skip destructuring for now
+                if (!t.isIdentifier(decl.id)) return;
                 const varName = decl.id.name;
                 let initVal = null;
 
@@ -147,30 +147,43 @@ class Transpiler {
                     this.addCode(`MOVE ${initVal} TO ${cobolVar}.`);
                 }
             });
-            path.skip(); // Don't traverse children manually, we handled them
+            path.skip();
         }
 
-        if (t.isFunctionDeclaration(node)) {
+        if (t.isFunctionDeclaration(node) || t.isClassMethod(node)) {
             const oldBuffer = this.currentBuffer;
             this.currentBuffer = this.sections;
 
-            const funcName = node.id.name;
-            const sectionName = this.functions.get(funcName);
-
-            this.sections.push(`       ${sectionName} SECTION.`);
-
-            node.params.forEach(param => {
-                if (t.isIdentifier(param)) {
-                    this.addVariable(param.name, '9(9)');
+            let funcName = '';
+            if (t.isFunctionDeclaration(node)) {
+                funcName = node.id.name;
+            } else if (t.isClassMethod(node)) {
+                if (t.isIdentifier(node.key)) {
+                    funcName = node.key.name;
                 }
-            });
+            }
 
-            // Traverse body manually to keep context
-            path.get('body').traverse({
-                enter: (p) => this.visit(p)
-            });
+            if (funcName) {
+                let sectionName = this.functions.get(funcName);
+                if (!sectionName) {
+                    sectionName = `FUNC-${funcName.toUpperCase()}`;
+                    this.functions.set(funcName, sectionName);
+                }
 
-            this.addCode('EXIT SECTION.');
+                this.sections.push(`       ${sectionName} SECTION.`);
+
+                node.params.forEach(param => {
+                    if (t.isIdentifier(param)) {
+                        this.addVariable(param.name, '9(9)');
+                    }
+                });
+
+                path.get('body').traverse({
+                    enter: (p) => this.visit(p)
+                });
+
+                this.addCode('EXIT SECTION.');
+            }
             this.currentBuffer = oldBuffer;
             path.skip();
         }
@@ -199,6 +212,13 @@ class Transpiler {
                 if (sectionName) {
                     this.addCode(`PERFORM ${sectionName}.`);
                 }
+            } else if (t.isMemberExpression(node.callee) && t.isThisExpression(node.callee.object)) {
+                // Handle this.method() calls
+                const funcName = node.callee.property.name;
+                const sectionName = this.functions.get(funcName);
+                if (sectionName) {
+                    this.addCode(`PERFORM ${sectionName}.`);
+                }
             }
             path.skip();
         }
@@ -209,20 +229,28 @@ class Transpiler {
                 const val = this.resolveExpression(node.right, targetVar);
                 if (val) this.addCode(`MOVE ${val} TO ${targetVar}.`);
             } else if (t.isMemberExpression(node.left)) {
-                // Array assignment
-                const arrName = node.left.object.name;
-                const index = this.resolveValue(node.left.property);
-                const arrVar = this.variables.get(arrName);
-                if (arrVar && arrVar.isArray) {
-                    let finalIndex = index;
-                    if (!isNaN(index)) {
-                        finalIndex = parseInt(index) + 1;
-                    } else {
-                        this.addCode(`COMPUTE WS-TEMP-NUM = ${index} + 1.`);
-                        finalIndex = 'WS-TEMP-NUM';
+                if (t.isThisExpression(node.left.object)) {
+                    // this.prop = val
+                    const propName = node.left.property.name;
+                    const targetVar = this.variables.get(propName)?.name || this.addVariable(propName, '9(9)');
+                    const val = this.resolveExpression(node.right, targetVar);
+                    if (val) this.addCode(`MOVE ${val} TO ${targetVar}.`);
+                } else {
+                    // Array assignment
+                    const arrName = node.left.object.name;
+                    const index = this.resolveValue(node.left.property);
+                    const arrVar = this.variables.get(arrName);
+                    if (arrVar && arrVar.isArray) {
+                        let finalIndex = index;
+                        if (!isNaN(index)) {
+                            finalIndex = parseInt(index) + 1;
+                        } else {
+                            this.addCode(`COMPUTE WS-TEMP-NUM = ${index} + 1.`);
+                            finalIndex = 'WS-TEMP-NUM';
+                        }
+                        const val = this.resolveValue(node.right);
+                        this.addCode(`MOVE ${val} TO ${arrVar.name} (${finalIndex}).`);
                     }
-                    const val = this.resolveValue(node.right);
-                    this.addCode(`MOVE ${val} TO ${arrVar.name} (${finalIndex}).`);
                 }
             }
             path.skip();
@@ -231,10 +259,7 @@ class Transpiler {
         if (t.isIfStatement(node)) {
             const condition = this.resolveCondition(node.test);
             this.addCode(`IF ${condition}`);
-
-            // Traverse consequent
             path.get('consequent').traverse({ enter: (p) => this.visit(p) });
-
             if (node.alternate) {
                 this.addCode('ELSE');
                 path.get('alternate').traverse({ enter: (p) => this.visit(p) });
@@ -280,6 +305,9 @@ class Transpiler {
         if (t.isNumericLiteral(node)) return node.value;
         if (t.isIdentifier(node)) return this.variables.get(node.name)?.name || node.name;
         if (t.isMemberExpression(node)) {
+            if (t.isThisExpression(node.object)) {
+                return this.variables.get(node.property.name)?.name || node.property.name;
+            }
             const arrName = node.object.name;
             const index = this.resolveValue(node.property);
             const arrVar = this.variables.get(arrName);

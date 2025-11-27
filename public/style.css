@@ -33,6 +33,14 @@ header {
     backdrop-filter: blur(10px);
 }
 
+.logo-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+}
+
 .logo-text {
     font-size: 2rem;
     font-weight: 700;
@@ -88,7 +96,8 @@ header {
     color: var(--secondary-accent);
 }
 
-textarea, pre {
+textarea,
+pre {
     flex: 1;
     background-color: transparent;
     border: none;
