@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('Brayner Framework Script Loaded v2');
     const jsInput = document.getElementById('js-input');
     const cobolOutput = document.getElementById('cobol-output');
     const swapBtn = document.getElementById('swap-btn');
