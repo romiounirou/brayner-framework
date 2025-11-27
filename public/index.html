@@ -13,7 +13,7 @@
 
 <body>
     <header>
-        <div class="logo-container">
+        <div class="logo-container" id="logo-container">
             <svg class="logo-icon" width="40" height="40" viewBox="0 0 24 24" fill="none"
                 xmlns="http://www.w3.org/2000/svg">
                 <path
@@ -25,15 +25,31 @@
             </svg>
             <h1 class="logo-text">Brayner <span class="highlight">Framework</span></h1>
         </div>
-        <p class="subtitle">Bidirectional Transpiler: <span id="mode-display">JavaScript → COBOL</span></p>
+        <p class="subtitle">Quer solidez? vem de alicate</p>
+        <p class="mode-info">Bidirectional Transpiler: <span id="mode-display">JavaScript → COBOL</span></p>
         <button id="swap-btn" class="swap-button">⇄ Swap Direction</button>
     </header>
+
+    <div id="creator-popup" class="popup-overlay">
+        <div class="popup-content">
+            <img src="creator.png" alt="Creator" class="creator-photo">
+            <h2>Criador</h2>
+            <p><strong>Renan Brayner</strong></p>
+            <p>Desenvolvedor do Brayner Framework</p>
+        </div>
+    </div>
 
     <main class="container">
         <div class="editor-pane">
             <div class="pane-header">
                 <span class="lang-label">JavaScript</span>
-                <span class="status" id="js-status">Input</span>
+                <button id="copy-input-btn" class="copy-button" title="Copy JavaScript code">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                    Copy
+                </button>
             </div>
             <textarea id="js-input" placeholder="// Write your JavaScript here...
 var msg = 'Hello World';
@@ -43,7 +59,13 @@ console.log(msg);" spellcheck="false"></textarea>
         <div class="editor-pane">
             <div class="pane-header">
                 <span class="lang-label">COBOL</span>
-                <span class="status" id="cobol-status">Real-time Preview</span>
+                <button id="copy-output-btn" class="copy-button" title="Copy COBOL code">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                    Copy
+                </button>
             </div>
             <pre id="cobol-output"><code class="language-cobol">       IDENTIFICATION DIVISION.
        PROGRAM-ID. BRAYNER-APP.

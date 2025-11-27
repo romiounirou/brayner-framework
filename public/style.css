@@ -39,6 +39,12 @@ header {
     justify-content: center;
     gap: 1rem;
     margin-bottom: 0.5rem;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.logo-container:hover {
+    transform: scale(1.05);
 }
 
 .logo-text {
@@ -53,8 +59,15 @@ header {
 
 .subtitle {
     color: var(--secondary-accent);
-    font-size: 0.9rem;
+    font-size: 1rem;
     margin-top: 0.5rem;
+    font-style: italic;
+}
+
+.mode-info {
+    color: var(--secondary-accent);
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
 }
 
 .swap-button {
@@ -76,12 +89,38 @@ header {
     box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
 }
 
+.copy-button {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.8rem;
+    background-color: transparent;
+    color: var(--accent-color);
+    border: 1px solid var(--accent-color);
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.copy-button:hover {
+    background-color: var(--accent-color);
+    color: var(--bg-color);
+}
+
+.copy-button.copied {
+    background-color: #10b981;
+    border-color: #10b981;
+    color: white;
+}
+
 .container {
     display: flex;
     flex: 1;
     padding: 2rem;
     gap: 2rem;
-    height: calc(100vh - 180px);
+    height: calc(100vh - 220px);
 }
 
 .editor-pane {
@@ -108,11 +147,6 @@ header {
     font-weight: 600;
     font-size: 0.9rem;
     color: var(--accent-color);
-}
-
-.status {
-    font-size: 0.8rem;
-    color: var(--secondary-accent);
 }
 
 textarea,
@@ -151,4 +185,63 @@ pre {
 
 ::-webkit-scrollbar-thumb:hover {
     background: var(--secondary-accent);
+}
+
+.popup-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.popup-overlay.active {
+    display: flex;
+}
+
+.popup-content {
+    background: var(--pane-bg);
+    border: 2px solid var(--accent-color);
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+    max-width: 400px;
+    animation: popupFadeIn 0.3s ease;
+}
+
+@keyframes popupFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.creator-photo {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--accent-color);
+    margin-bottom: 1rem;
+}
+
+.popup-content h2 {
+    color: var(--accent-color);
+    margin-bottom: 0.5rem;
+}
+
+.popup-content p {
+    color: var(--text-color);
+    margin: 0.5rem 0;
 }

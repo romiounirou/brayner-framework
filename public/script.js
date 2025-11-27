@@ -5,7 +5,7 @@ const modeDisplay = document.getElementById('mode-display');
 const jsLabel = document.querySelector('.editor-pane:nth-child(1) .lang-label');
 const cobolLabel = document.querySelector('.editor-pane:nth-child(2) .lang-label');
 
-let isReverse = false; // false = JS->COBOL, true = COBOL->JS
+let isReverse = false;
 let timeout = null;
 
 jsInput.addEventListener('input', () => {
@@ -22,15 +22,14 @@ swapBtn.addEventListener('click', () => {
         modeDisplay.textContent = 'COBOL → JavaScript';
         jsLabel.textContent = 'COBOL';
         cobolLabel.textContent = 'JavaScript';
-        jsInput.placeholder = '// Write your COBOL here...\n       IDENTIFICATION DIVISION.\n       PROGRAM-ID. TEST.';
+        jsInput.placeholder = '// Write your COBOL here...\\n       IDENTIFICATION DIVISION.\\n       PROGRAM-ID. TEST.';
     } else {
         modeDisplay.textContent = 'JavaScript → COBOL';
         jsLabel.textContent = 'JavaScript';
         cobolLabel.textContent = 'COBOL';
-        jsInput.placeholder = '// Write your JavaScript here...\nvar msg = \'Hello World\';\nconsole.log(msg);';
+        jsInput.placeholder = '// Write your JavaScript here...\\nvar msg = \\'Hello World\\';\\nconsole.log(msg);';
     }
 
-    // Clear and re-transpile
     cobolOutput.textContent = '';
     if (jsInput.value.trim()) {
         transpile(jsInput.value);
@@ -69,7 +68,54 @@ async function transpile(code) {
     }
 }
 
-// Initial transpile if there's content
 if (jsInput.value) {
     transpile(jsInput.value);
 }
+
+// Creator Popup
+const logoContainer = document.getElementById('logo-container');
+const creatorPopup = document.getElementById('creator-popup');
+
+logoContainer.addEventListener('click', () => {
+    creatorPopup.classList.add('active');
+});
+
+creatorPopup.addEventListener('click', (e) => {
+    if (e.target === creatorPopup) {
+        creatorPopup.classList.remove('active');
+    }
+});
+
+// Copy Buttons
+const copyInputBtn = document.getElementById('copy-input-btn');
+const copyOutputBtn = document.getElementById('copy-output-btn');
+
+async function copyToClipboard(text, button) {
+    try {
+        await navigator.clipboard.writeText(text);
+
+        button.classList.add('copied');
+        const originalHTML = button.innerHTML;
+        button.innerHTML = `
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            Copied!
+        `;
+
+        setTimeout(() => {
+            button.classList.remove('copied');
+            button.innerHTML = originalHTML;
+        }, 2000);
+    } catch (err) {
+        console.error('Failed to copy:', err);
+    }
+}
+
+copyInputBtn.addEventListener('click', () => {
+    copyToClipboard(jsInput.value, copyInputBtn);
+});
+
+copyOutputBtn.addEventListener('click', () => {
+    copyToClipboard(cobolOutput.textContent, copyOutputBtn);
+});
