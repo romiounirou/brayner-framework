@@ -125,6 +125,58 @@ class Transpiler {
             return;
         }
 
+        // Vue Options API Support
+        if (t.isExportDefaultDeclaration(node) && t.isObjectExpression(node.declaration)) {
+            const properties = path.get('declaration.properties');
+            properties.forEach(propPath => {
+                const prop = propPath.node;
+
+                // data()
+                if (t.isObjectMethod(prop) && prop.key.name === 'data') {
+                    propPath.get('body.body').forEach(stmt => {
+                        if (stmt.isReturnStatement() && t.isObjectExpression(stmt.node.argument)) {
+                            stmt.node.argument.properties.forEach(dataProp => {
+                                if (t.isObjectProperty(dataProp) && t.isIdentifier(dataProp.key)) {
+                                    const varName = dataProp.key.name;
+                                    let pic = '9(9)';
+                                    let initVal = '0';
+                                    if (t.isStringLiteral(dataProp.value)) {
+                                        pic = 'X(100)';
+                                        initVal = `"${dataProp.value.value}"`;
+                                    } else if (t.isNumericLiteral(dataProp.value)) {
+                                        initVal = dataProp.value.value;
+                                    }
+                                    const cobolVar = this.addVariable(varName, pic);
+                                    this.mainProcedure.push(`           MOVE ${initVal} TO ${cobolVar}.`);
+                                }
+                            });
+                        }
+                    });
+                }
+
+                // methods
+                if (t.isObjectProperty(prop) && prop.key.name === 'methods' && t.isObjectExpression(prop.value)) {
+                    const methodProps = propPath.get('value.properties');
+                    methodProps.forEach(methodPath => {
+                        if (methodPath.isObjectMethod()) {
+                            this.visitMethod(methodPath);
+                        }
+                    });
+                }
+
+                // lifecycle
+                if (t.isObjectMethod(prop) && (prop.key.name === 'mounted' || prop.key.name === 'created')) {
+                    const oldBuffer = this.currentBuffer;
+                    this.currentBuffer = this.mainProcedure;
+                    propPath.get('body').traverse({
+                        enter: (p) => this.visit(p)
+                    });
+                    this.currentBuffer = oldBuffer;
+                }
+            });
+            path.skip();
+        }
+
         if (t.isVariableDeclaration(node)) {
             node.declarations.forEach(decl => {
                 if (!t.isIdentifier(decl.id)) return;
@@ -159,40 +211,7 @@ class Transpiler {
         }
 
         if (t.isFunctionDeclaration(node) || t.isClassMethod(node)) {
-            const oldBuffer = this.currentBuffer;
-            this.currentBuffer = this.sections;
-
-            let funcName = '';
-            if (t.isFunctionDeclaration(node)) {
-                funcName = node.id.name;
-            } else if (t.isClassMethod(node)) {
-                if (t.isIdentifier(node.key)) {
-                    funcName = node.key.name;
-                }
-            }
-
-            if (funcName) {
-                let sectionName = this.functions.get(funcName);
-                if (!sectionName) {
-                    sectionName = `FUNC-${funcName.toUpperCase()}`;
-                    this.functions.set(funcName, sectionName);
-                }
-
-                this.sections.push(`       ${sectionName} SECTION.`);
-
-                node.params.forEach(param => {
-                    if (t.isIdentifier(param)) {
-                        this.addVariable(param.name, '9(9)');
-                    }
-                });
-
-                path.get('body').traverse({
-                    enter: (p) => this.visit(p)
-                });
-
-                this.addCode('EXIT SECTION.');
-            }
-            this.currentBuffer = oldBuffer;
+            this.visitMethod(path);
             path.skip();
         }
 
@@ -266,14 +285,18 @@ class Transpiler {
 
         // Update Expression (i++, i--)
         if (t.isUpdateExpression(node)) {
+            let varName = null;
             if (t.isIdentifier(node.argument)) {
-                const varName = this.variables.get(node.argument.name)?.name;
-                if (varName) {
-                    if (node.operator === '++') {
-                        this.addCode(`ADD 1 TO ${varName}.`);
-                    } else if (node.operator === '--') {
-                        this.addCode(`SUBTRACT 1 FROM ${varName}.`);
-                    }
+                varName = this.variables.get(node.argument.name)?.name;
+            } else if (t.isMemberExpression(node.argument) && t.isThisExpression(node.argument.object)) {
+                varName = this.variables.get(node.argument.property.name)?.name;
+            }
+
+            if (varName) {
+                if (node.operator === '++') {
+                    this.addCode(`ADD 1 TO ${varName}.`);
+                } else if (node.operator === '--') {
+                    this.addCode(`SUBTRACT 1 FROM ${varName}.`);
                 }
             }
             path.skip();
@@ -338,12 +361,42 @@ class Transpiler {
         }
     }
 
-    resolveExpression(node, targetVar) {
-        if (t.isBinaryExpression(node)) {
-            this.handleBinaryExpression(node, targetVar);
-            return null;
+    visitMethod(path) {
+        const node = path.node;
+        const oldBuffer = this.currentBuffer;
+        this.currentBuffer = this.sections;
+
+        let funcName = '';
+        if (t.isFunctionDeclaration(node)) {
+            funcName = node.id.name;
+        } else if (t.isClassMethod(node) || t.isObjectMethod(node)) {
+            if (t.isIdentifier(node.key)) {
+                funcName = node.key.name;
+            }
         }
-        return this.resolveValue(node);
+
+        if (funcName) {
+            let sectionName = this.functions.get(funcName);
+            if (!sectionName) {
+                sectionName = `FUNC-${funcName.toUpperCase()}`;
+                this.functions.set(funcName, sectionName);
+            }
+
+            this.sections.push(`       ${sectionName} SECTION.`);
+
+            node.params.forEach(param => {
+                if (t.isIdentifier(param)) {
+                    this.addVariable(param.name, '9(9)');
+                }
+            });
+
+            path.get('body').traverse({
+                enter: (p) => this.visit(p)
+            });
+
+            this.addCode('EXIT SECTION.');
+        }
+        this.currentBuffer = oldBuffer;
     }
 
     handleBinaryExpression(node, targetVar) {

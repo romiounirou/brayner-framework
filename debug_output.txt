@@ -1,0 +1,36 @@
+Detected Vue file
+Extracted script: 
+export default {
+  data() {
+    return {
+      message: "Hello COBOL",
+      count: 10
+    }
+  },
+  methods: {
+    increment() {
+      this.count++;
+    }
+  },
+  mounted() {
+    console.log(this.message);
+    this.increment();
+  }
+}
+
+--- DEBUG ---
+WS Code:        77  WS-TEMP-NUM PIC 9(9) VALUE 0.
+       77  WS-TEMP-STR PIC X(100) VALUE SPACES.
+       77  WS-RETURN-VAL PIC 9(9) VALUE 0.
+       77  MESSAGE PIC X(100).
+       77  COUNT PIC 9(9).
+Main Procedure: [
+  '           MOVE "Hello COBOL" TO MESSAGE.',
+  '           MOVE 10 TO COUNT.',
+  '           DISPLAY MESSAGE.',
+  '           PERFORM FUNC-INCREMENT.',
+  '           STOP RUN.'
+]
+Sections: [ '       FUNC-INCREMENT SECTION.', '           EXIT SECTION.' ]
+--- END DEBUG ---
+Transpilation complete. Check output.cbl
