@@ -4,5 +4,6 @@
             "source": "/(.*)",
             "destination": "/server.js"
         }
-    ]
+    ],
+    "outputDirectory": "frontend/dist"
 }
