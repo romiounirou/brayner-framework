@@ -1,12 +1,13 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const path = require('path');
 const Transpiler = require('./transpiler');
 const ReverseTranspiler = require('./reverse_transpiler');
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'frontend/dist')));
 app.use(bodyParser.json());
 
 app.post('/api/transpile', (req, res) => {
@@ -39,6 +40,15 @@ app.post('/api/reverse', (req, res) => {
     }
 });
 
-app.listen(port, () => {
-    console.log(`Alicate de Roseta - Web Interface running at http://localhost:${port}`);
+// Catch-all handler for any request that doesn't match the above
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'frontend/dist', 'index.html'));
 });
+
+if (require.main === module) {
+    app.listen(port, () => {
+        console.log(`Alicate de Roseta - Web Interface running at http://localhost:${port}`);
+    });
+}
+
+module.exports = app;
